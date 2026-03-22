@@ -3,22 +3,34 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:skill_circles/app.dart';
 
 void main() {
-  testWidgets('login flow navigates to the home screen', (tester) async {
-    await tester.pumpWidget(const SkillCircleApp());
-
-    expect(find.text('Welcome back'), findsOneWidget);
-    expect(find.byType(TextFormField), findsNWidgets(2));
-
-    await tester.enterText(
-      find.byType(TextFormField).at(0),
-      'alex@example.com',
-    );
-    await tester.enterText(find.byType(TextFormField).at(1), 'secret123');
-    await tester.tap(find.widgetWithText(ElevatedButton, 'Log in'));
+  testWidgets('user can browse circles and create a post', (tester) async {
+    await tester.pumpWidget(SkillCircleApp());
     await tester.pumpAndSettle();
 
-    expect(find.text('Hello, Alex'), findsOneWidget);
-    expect(find.text('alex@example.com'), findsOneWidget);
-    expect(find.byIcon(Icons.logout_rounded), findsOneWidget);
+    expect(find.text('Your Circles'), findsOneWidget);
+    expect(find.text('Featured circles'), findsOneWidget);
+    expect(find.text('Design Circle'), findsOneWidget);
+
+    await tester.tap(find.text('Design Circle'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Recent posts'), findsOneWidget);
+    expect(find.byType(FloatingActionButton), findsOneWidget);
+
+    await tester.tap(find.widgetWithText(FloatingActionButton, 'Create post'));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(
+      find.byType(TextField),
+      'Excited to join this circle and share ideas.',
+    );
+    await tester.tap(find.widgetWithText(FilledButton, 'Post to circle'));
+    await tester.pumpAndSettle();
+
+    expect(
+      find.text('Excited to join this circle and share ideas.'),
+      findsOneWidget,
+    );
+    expect(find.text('You'), findsOneWidget);
   });
 }
